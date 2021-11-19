@@ -1,0 +1,7 @@
+guestbook.content:
+  path: '/guestbook/page'
+  defaults:
+    _controller: 'Drupal\guestbook\Controller\GuestbookController::content'
+    _title: 'Add your response'
+  requirements:
+    _permission: 'access content'

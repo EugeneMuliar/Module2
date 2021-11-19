@@ -1,0 +1,16 @@
+<?php
+/**
+ * Implements hook_theme().
+ */
+function guestbook_theme($existing, $type, $theme, $path)
+{
+  return [
+    'response-page-template'=>[
+//      'template'=>'response-page-template',
+      'render'=>'form',
+      'variables' => [
+        'form'=> NULL
+      ],
+    ]
+  ];
+}
