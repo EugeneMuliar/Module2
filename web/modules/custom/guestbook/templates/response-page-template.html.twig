@@ -1,2 +1,15 @@
-<h2>Hello</h2>
+<h2></h2>
 {{ form }}
+
+<div>
+  {% if responses %}
+    <div class="responses">
+      {% for response in responses %}
+        <div class="response">
+          <h4 class="response-name">{{ response.name }}</h4>
+          <h4 class="response-email">{{ response.email }}</h4>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+</div>

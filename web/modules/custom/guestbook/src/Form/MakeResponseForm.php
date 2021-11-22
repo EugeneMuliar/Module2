@@ -4,8 +4,13 @@ namespace Drupal\guestbook\Form;
 
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CssCommand;
+use Drupal\Core\Ajax\MessageCommand;
+use Drupal\Core\Ajax\RedirectCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+use Drupal\file\Entity\File;
+use Drupal\views\Plugin\views\area\Messages;
 
 class MakeResponseForm extends FormBase{
 
@@ -86,9 +91,9 @@ class MakeResponseForm extends FormBase{
     $form['submit'] = [
       '#type' => 'submit',
       '#name' => 'submit',
-      '#value' => $this->t('ADD CAT'),
+      '#value' => $this->t('SEND MESSAGE'),
       '#ajax' => [
-        'callback' => '::submitAjaxMessage',
+        'callback' => '::AJAXsubmitMessage',
         'event' => 'click',
       ],
     ];
@@ -118,7 +123,7 @@ class MakeResponseForm extends FormBase{
 
     return $response;
   }
-
+  //Function that validate Email field
   public function validateEmailFormat(array &$form, FormStateInterface $form_state){
     if (filter_var($form_state->getValue('mail'), FILTER_VALIDATE_EMAIL)) {
       return TRUE;
@@ -139,7 +144,7 @@ class MakeResponseForm extends FormBase{
 
     return $response;
   }
-
+  //Function that validate Phone field
   public function validatePhoneFormat(array &$form, FormStateInterface $form_state){
     $phone = $form_state->getValue('phone');
     if (preg_match("/[+]380[0-9]{7}/", $phone)) {
@@ -147,7 +152,7 @@ class MakeResponseForm extends FormBase{
     }
     return FALSE;
   }
-
+  //Function that validate Phone field with AJAX
   public function AJAXvalidatePhoneFormat(array &$form, FormStateInterface $form_state){
     $valid = $this->validatePhoneFormat($form, $form_state);
     $response = new AjaxResponse();
@@ -162,8 +167,72 @@ class MakeResponseForm extends FormBase{
     return $response;
   }
 
+  public function validateForm(array &$form, FormStateInterface $form_state){
+    $name_len = strlen($form_state->getValue('name'));
+    $error_count = 0;
+    if(!$this->validateNameLength($form, $form_state)){
+      $form_state->setErrorByName('name', $this->t('✗ Name is too short.' . $name_len));
+      $error_count++;
+    }
+    if(!$this->validateEmailFormat($form, $form_state)){
+      $form_state ->setErrorByName('email', $this->t('✗ Email is not valid'));
+      $error_count++;
+    }
+    if(!$this->validatePhoneFormat($form, $form_state)){
+      $form_state->setErrorByName('phone', $this->t('✗ Enter the phone number correctly'));
+      $error_count++;
+    }
+    if($error_count > 0){
+      return FALSE;
+    }
+    return TRUE;
+  }
+
+  public function AJAXsubmitMessage(array &$form, FormStateInterface $form_state){
+    $response = new AjaxResponse();
+    $url = Url::fromRoute('guestbook.content');
+
+    $response->addCommand(new RedirectCommand($url->toString()));
+    $response ->addCommand(new MessageCommand($this->t('✓ Your message added')));
+
+    return $response;
+  }
   public function submitForm(array &$form, FormStateInterface $form_state)
   {
+    $avatar = $form_state->getValue('avatar');
+    $image = $form_state->getValue('image');
+    $current_date = date('m/d/y h:i:s',  strtotime('+3 hour'));
+
+    if($this->validateForm($form, $form_state)){
+      if(!is_null($avatar[0])){
+        $file_avatar = File::load($avatar[0]);
+        $file_avatar->setPermanent();
+        $file_avatar->save();
+      }
+      else{
+        $avatar[0] = 0;
+      }
+      if(!is_null($image[0])){
+        $file_image = File::load($image[0]);
+        $file_image->setPermanent();
+        $file_image->save();
+      }
+      else{
+        $image[0] = 0;
+      }
+
+      $response = [
+        'author_name' => $form_state->getValue('name'),
+        'email' => $form_state->getValue('mail'),
+        'phone' => $form_state->getValue('phone'),
+        'message' => $form_state->getValue('message'),
+        'avatar' => $avatar[0],
+        'image' => $image[0],
+        'timestamp' => $current_date,
+      ];
+
+      \Drupal::database()->insert('responses')->fields($response)->execute();
+    }
 
   }
 }
