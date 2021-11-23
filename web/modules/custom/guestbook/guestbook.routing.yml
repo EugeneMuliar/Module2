@@ -5,3 +5,19 @@ guestbook.content:
     _title: 'Add your response'
   requirements:
     _permission: 'access content'
+
+guestbook.deleteResponse:
+  path: '/guestbook/delete/{responseID}'
+  defaults:
+    _form: '\Drupal\guestbook\Form\DeleteResponseForm'
+    _title: 'Are U Sure?'
+  requirements:
+    _role: 'administrator'
+
+guestbook.editResponse:
+  path: '/guestbook/edit/{responseID}'
+  defaults:
+    _form: '\Drupal\guestbook\Form\EditResponseForm'
+    _title: 'Are U Sure?'
+  requirements:
+    _role: 'administrator'

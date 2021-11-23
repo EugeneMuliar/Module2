@@ -2,6 +2,7 @@
 
 namespace Drupal\guestbook\Form;
 
+
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\CssCommand;
 use Drupal\Core\Ajax\MessageCommand;
@@ -10,17 +11,26 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
-use Drupal\views\Plugin\views\area\Messages;
 
-class MakeResponseForm extends FormBase{
+class EditResponseForm extends FormBase{
+  public $responseID;
 
   public function getFormId()
   {
-    return 'response_form';
+    return 'Edit Response';
   }
 
-  public function buildForm(array $form, FormStateInterface $form_state)
+  public function buildForm(array $form, FormStateInterface $form_state, $responseID = NULL)
   {
+    $this->id = $responseID;
+    $query = \Drupal::database();
+    $data = $query->select('responses', 'r')
+                  ->condition('r.id', $responseID, '=')
+                  ->fields('r', ['id', 'author_name', 'email', 'phone', 'avatar', 'image,', 'message'])
+                  ->execute()
+                  ->fetchAll();
+    $query_img = json_decode(json_encode($data), true);
+
     $form['name'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Your Name:'),
@@ -31,6 +41,7 @@ class MakeResponseForm extends FormBase{
         'callback' => '::AJAXvalidateNameLength',
         'event' => 'change',
       ],
+      '#default_value' => $data[0]->author_name,
     ];
     $form['mail'] = [
       '#type' => 'email',
@@ -41,6 +52,7 @@ class MakeResponseForm extends FormBase{
         'callback' => '::AJAXvalidateEmailFormat',
         'event' => 'change',
       ],
+      '#default_value' => $data[0]->email,
     ];
     $form['phone'] = [
       '#type' => 'tel',
@@ -48,12 +60,12 @@ class MakeResponseForm extends FormBase{
       '#description' => $this->t('Phone must be \'+380XXXXXXXXX\' format'),
       '#required' => true,
       '#placeholder' => $this->t('+380XXXXXXXXX'),
-      '#default_value' => ' ',
       '#maxlength' => 13,
       '#ajax' => [
         'callback' => '::AJAXvalidatePhoneFormat',
         'event' => 'change',
       ],
+      '#default_value' => $data[0]->phone,
     ];
     $form['message'] = [
       '#type' => 'textarea',
@@ -63,6 +75,7 @@ class MakeResponseForm extends FormBase{
       '#description' => $this->t(''),
       '#required' => true,
       '#maxlength' => 255,
+      '#default_value' => $data[0]->message,
     ];
     $form['avatar'] = [
       '#type' => 'managed_file',
@@ -74,6 +87,7 @@ class MakeResponseForm extends FormBase{
         'file_validate_extensions' => ['png jpg jpeg'],
         'file_validate_size' => [2*1024*1024],
       ],
+      '#default_value' => [$query_img[0]['avatar']],
     ];
     $form['image'] = [
       '#type' => 'managed_file',
@@ -85,6 +99,7 @@ class MakeResponseForm extends FormBase{
         'file_validate_extensions' => ['png jpg jpeg'],
         'file_validate_size' => [5*1024*1024],
       ],
+      '#default_value' => [$query_img[0]['image']],
     ];
     $form['submit'] = [
       '#type' => 'submit',
@@ -98,7 +113,7 @@ class MakeResponseForm extends FormBase{
 
     return $form;
   }
-  //Function that validate Name field on its length
+
   public function validateNameLength(array &$form, FormStateInterface $form_state){
     $name_len = strlen($form_state->getValue('name'));
     if ($name_len <= 2) {
@@ -229,7 +244,7 @@ class MakeResponseForm extends FormBase{
         'timestamp' => $current_date,
       ];
 
-      \Drupal::database()->insert('responses')->fields($response)->execute();
+      \Drupal::database()->update('responses') ->condition('id', $this->id)->fields($response)->execute();
     }
 
   }

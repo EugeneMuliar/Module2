@@ -6,8 +6,30 @@
     <div class="responses">
       {% for response in responses %}
         <div class="response">
-          <h4 class="response-name">{{ response.name }}</h4>
-          <h4 class="response-email">{{ response.email }}</h4>
+          <div class="personal-data">
+            <h4 class="response-name">{{ response.name }}</h4>
+            {% if response.avatar['#isset'] %}
+              <div class="response-avatar"><a href="{{ file_url(response.avatar['#uri']) }}" target="_blank">{{ response.avatar }}</a></div>
+            {% else %}
+              <div class="response-avatar"><a href="{{ response.avatar['#uri'] }}" target="_blank"><img alt="" title="avatar"  class="img-responsive" src="/modules/custom/guestbook/images/default_user.png" width="50" height="50"></a></div>
+            {% endif %}
+            <h4 class="response-created-time">{{ response.created_time }}</h4>
+
+          </div>
+          <div class="response-content">
+            <h4 class="response-message">{{ response.message }}</h4>
+            <div class="response-image"><a href="{{ file_url(response.image['#uri']) }}" target="_blank">{{ response.image }}</a></div>
+          </div>
+          <div class="contacts">
+            <h4 class="response-email">{{ response.email }}</h4>
+            <h4 class="response-phone">{{ response.phone }}</h4>
+          </div>
+          {% if user.hasPermission('administer nodes') %}
+            <div class="response-btn">
+              <div class="edit-cat"><a href="/guestbook/edit/{{ response.id }}" class="use-ajax edit-response-btn" data-dialog-type="modal">Edit</a></div>
+              <div class="delete-cat"><a href="/guestbook/delete/{{ response.id }}" class="use-ajax delete-response-btn" data-dialog-type="modal">Delete</a></div>
+            </div>
+          {% endif %}
         </div>
       {% endfor %}
     </div>
