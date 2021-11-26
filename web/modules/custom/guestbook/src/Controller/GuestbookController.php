@@ -2,11 +2,23 @@
 
 namespace Drupal\guestbook\Controller;
 
+/**
+ * @file
+ * Provides database creating functionality.
+ */
+
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\file\Entity\File;
 
-class GuestbookController extends ControllerBase{
-  public function content(){
+/**
+ * Provides content.
+ */
+class GuestbookController extends ControllerBase {
+
+  /**
+   * Implements content().
+   */
+  public function content() {
     $guestbook['response_form'] = \Drupal::formBuilder()->getForm('Drupal\guestbook\Form\MakeResponseForm');
 
     $query = \Drupal::database()->select('responses', 'r');
@@ -14,27 +26,27 @@ class GuestbookController extends ControllerBase{
     $data = $query->execute()->fetchAll();
     $responses = [];
 
-    foreach ($data as $field){
-      if(!$field->avatar == 0){
+    foreach ($data as $field) {
+      if (!$field->avatar == 0) {
         $file_avatar = File::load($field->avatar);
         $avatar_uri = $file_avatar->getFileUri();
-        $avatar_is_set = true;
+        $avatar_is_set = TRUE;
       }
-      else{
+      else {
         $avatar_uri = '/modules/custom/guestbook/images/default_user.png';
-        $avatar_is_set = false;
+        $avatar_is_set = FALSE;
       }
-      if(!$field->image == 0){
+      if (!$field->image == 0) {
         $file_image = File::load($field->image);
         $image_uri = $file_image->getFileUri();
 
       }
-      else{
+      else {
         $image_uri = 0;
       }
 
       $avatar_img = [
-        '#theme'=> 'image_style',
+        '#theme' => 'image_style',
         '#style_name' => 'wide',
         '#uri' => $avatar_uri,
         '#title' => 'avatar',
@@ -43,7 +55,7 @@ class GuestbookController extends ControllerBase{
         '#isset' => $avatar_is_set,
       ];
       $image_img = [
-        '#theme'=> 'image_style',
+        '#theme' => 'image_style',
         '#style_name' => 'wide',
         '#uri' => $image_uri,
         '#title' => 'image',
@@ -51,22 +63,24 @@ class GuestbookController extends ControllerBase{
         '#height' => 200,
       ];
       $responses[] = [
-        'id'=>$field->id,
-        'name'=>$field->author_name,
-        'email'=>$field->email,
-        'phone'=>$field->phone,
-        'message'=>$field->message,
-        'avatar'=>$avatar_img,
-        'image'=>$image_img,
-        'created_time'=>$field->timestamp
+        'id' => $field->id,
+        'name' => $field->author_name,
+        'email' => $field->email,
+        'phone' => $field->phone,
+        'message' => $field->message,
+        'avatar' => $avatar_img,
+        'image' => $image_img,
+        'created_time' => $field->timestamp,
       ];
     }
 
     $build = [
       '#theme' => 'response-page-template',
       '#responses' => $responses,
-      '#form' => $guestbook
+      '#form' => $guestbook,
     ];
     return $build;
+
   }
+
 }

@@ -1,0 +1,68 @@
+.response-form {
+  max-width: 500px;
+  padding: 20px 10px;
+  background-color: #ece9e9;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+.response-form .form-item .input-group .input-group-addon {
+  display: none;
+}
+.response-form .form-item .input-group {
+  width: 100%;
+}
+.response-form .button {
+  color: #fff;
+  background-color: #bdbcbc;
+}
+.responses {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 10px;
+}
+.responses .response {
+  padding: 10px;
+  background-color: #ece9e9;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+}
+.responses .response .personal-data {
+  display: flex;
+  align-items: center;
+}
+.responses .response .personal-data .response-avatar {
+  height: 50px;
+  margin-right: 10px;
+}
+.responses .response .personal-data .response-name {
+  margin-right: 10px;
+}
+.responses .response .personal-data .response-created-time {
+  font-size: 12px;
+}
+.responses .response .response-content .response-message {
+  text-align: justify;
+  min-height: 99px;
+}
+.responses .response .response-content .response-image {
+  margin: 0 auto;
+  width: 200px;
+}
+.responses .response .contacts {
+  display: flex;
+  justify-content: space-around;
+}
+.responses .response .response-btn {
+  display: flex;
+  justify-content: space-around;
+  margin: 20px 0;
+  align-items: flex-end;
+  flex: 1 0 auto;
+}
+.responses .response .response-btn div a {
+  padding: 10px 20px;
+  background-color: #bdbcbc;
+  color: #fff;
+  border-radius: 10px;
+}

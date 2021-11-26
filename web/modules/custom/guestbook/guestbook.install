@@ -1,51 +1,59 @@
 <?php
-use Drupal\Core\Database\Database;
 
+/**
+ * @file
+ * Provides database creating functionality.
+ */
 
-
+/**
+ * Implements hook_install().
+ */
 function guestbook_uninstall() {
-// Remove tables.
-//  drupal_uninstall_schema('responses');
+  // Remove tables.
 }
+
+/**
+ * Implements hook_schema().
+ */
 function guestbook_schema() {
   $schema['responses'] = [
     'fields' => [
-      'id'=> [
+      'id' => [
         'type' => 'serial',
         'unsigned' => TRUE,
         'not null' => TRUE,
       ],
-      'author_name'=>[
+      'author_name' => [
         'type' => 'varchar',
         'length' => 100,
         'not null' => TRUE,
         'default' => '',
       ],
-      'email'=>[
+      'email' => [
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
         'default' => '',
       ],
-      'phone'=>[
+      'phone' => [
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
         'default' => '',
       ],
-      'message'=>[
+      'message' => [
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
         'default' => '',
       ],
-      'avatar'=>[
+      'avatar' => [
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
         'length' => 64,
       ],
-      'image'=>[
+      'image' => [
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
@@ -61,12 +69,15 @@ function guestbook_schema() {
     ],
     'primary key' => [
       'id',
-    ]
+    ],
   ];
   return $schema;
+
 }
 
+/**
+ * Implements hook_install().
+ */
 function guestbook_install() {
   // Use schema API to create database table.
-//  drupal_install_schema('responses');
 }

@@ -1,5 +1,6 @@
-<h2></h2>
-{{ form }}
+{{ attach_library('guestbook/guestbook_css') }}
+
+  {{ form }}
 
 <div>
   {% if responses %}
@@ -7,12 +8,12 @@
       {% for response in responses %}
         <div class="response">
           <div class="personal-data">
-            <h4 class="response-name">{{ response.name }}</h4>
             {% if response.avatar['#isset'] %}
               <div class="response-avatar"><a href="{{ file_url(response.avatar['#uri']) }}" target="_blank">{{ response.avatar }}</a></div>
             {% else %}
               <div class="response-avatar"><a href="{{ response.avatar['#uri'] }}" target="_blank"><img alt="" title="avatar"  class="img-responsive" src="/modules/custom/guestbook/images/default_user.png" width="50" height="50"></a></div>
             {% endif %}
+            <h4 class="response-name">{{ response.name }}</h4>
             <h4 class="response-created-time">{{ response.created_time }}</h4>
 
           </div>
@@ -21,8 +22,7 @@
             <div class="response-image"><a href="{{ file_url(response.image['#uri']) }}" target="_blank">{{ response.image }}</a></div>
           </div>
           <div class="contacts">
-            <h4 class="response-email">{{ response.email }}</h4>
-            <h4 class="response-phone">{{ response.phone }}</h4>
+            <h4>Contacts: </h4><h4 class="response-email">{{ response.email }}</h4>  <h4 class="response-phone">{{ response.phone }}</h4>
           </div>
           {% if user.hasPermission('administer nodes') %}
             <div class="response-btn">

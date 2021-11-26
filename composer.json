@@ -24,6 +24,9 @@
         "drupal/core-recommended": "^9",
         "drush/drush": "^10.2"
     },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "*"
+    },
     "conflict": {
         "drupal/drupal": "*"
     },
